@@ -4,8 +4,10 @@ class Providers::Gsmarena < Providers::Base
     doc = Nokogiri::HTML(open(search_url))
     phones = doc.css('#review-body .makers ul li')
     phones.map do |phone|
+      title_node = phone.css('strong span').first
+      title = [title_node.children[0], title_node.children[2]].join(' ')
       {
-        title: phone.content,
+        title: title,
         id: phone.css('a').first.attribute('href').value[0..-5]
       }
     end
