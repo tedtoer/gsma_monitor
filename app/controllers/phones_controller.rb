@@ -2,10 +2,9 @@ class PhonesController < ApplicationController
   respond_to :json
 
   def index
-    @phones = PhonesParser.new(
-      provider: Providers::Gsmarena,
-      query: index_search_params[:query]
-    ).parse
+    @phones = PhonesService.new(
+      provider: 'Gsmarena'
+    ).search(query: index_search_params[:query])
 
     respond_with @phones
   end
