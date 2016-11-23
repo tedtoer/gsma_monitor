@@ -10,6 +10,7 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'slim-rails'
 gem 'virtus'
+gem 'react_on_rails'
 
 group :development, :test do
   gem 'byebug', platform: :mri
