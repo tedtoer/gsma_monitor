@@ -1,3 +1,55 @@
 // Place all the styles related to the main controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+body {
+  font: 400 16px/22px 'Roboto', sans-serif;
+  color: #333;
+  background: #fff;
+}
+
+input, textarea {
+  padding: 12px 20px;
+  font: 400 16px/22px 'Roboto', sans-serif;
+  color: #808080;
+  background: #fff;
+  border: none;
+  outline: none;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+       -o-border-radius: 5px;
+          border-radius: 5px;
+}
+
+input {
+  width: 260px;
+  height: 20px;
+  margin: 10px 0 10px 10px;
+}
+
+#root {
+  width: 320px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.top-panel {
+  height: 64px;
+  width: 320px;
+  background: #EEE;
+  position: fixed;
+}
+
+.phones-list, h2 {
+  padding-top: 64px;
+}
+
+.phone-item {
+  height: 20px;
+  padding: 12px 20px;
+
+  &:hover {
+    background: #c4daff;
+    cursor: pointer;
+  }
+}
