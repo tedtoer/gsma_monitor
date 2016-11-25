@@ -51,6 +51,13 @@ function receivePhones(query, json) {
   }
 }
 
+export const CLICK_BACK = 'CLICK_BACK'
+export function clickBack() {
+  return {
+    type: CLICK_BACK
+  }
+}
+
 export function fetchPhones(query) {
   return dispatch => {
     dispatch(requestPhones(query))
@@ -63,7 +70,7 @@ export function fetchPhones(query) {
 export function fetchPhone(idExternal) {
   return dispatch => {
     dispatch(requestPhone(idExternal))
-    return fetch(HOST + `/phone?id_external=${idExternal}`)
+    return fetch(HOST + `/phones/${idExternal}`)
       .then(response => response.json())
       .then(json => dispatch(receivePhone(idExternal, json)))
   }

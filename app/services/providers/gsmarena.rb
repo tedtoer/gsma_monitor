@@ -18,6 +18,7 @@ class Providers::Gsmarena < Providers::Base
   def get(id: nil)
     get_url = base_url_for_query + "/#{id}.php"
     doc = Nokogiri::HTML(open(get_url))
+    title = doc.css('.specs-phone-name-title').first.text
     phone = doc.css('.center-stage').first
     specs = phone.css('.specs-spotlight-features').first
     display_spec = specs.css('li.help.accented.help-display').first
@@ -26,6 +27,7 @@ class Providers::Gsmarena < Providers::Base
     battery_spec = specs.css('li.help.accented.help-battery').first
 
     {
+      title: title,
       image_url: phone.css('.specs-photo-main a img').first.attribute('src').value,
       display_size: display_spec.children[3].content[0..-2],
       display_resolution: display_spec.children[4].content.split(' ')[0],

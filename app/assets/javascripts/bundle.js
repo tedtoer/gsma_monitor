@@ -32158,7 +32158,7 @@ var bundle =
 	  selectedQuery: '',
 	  isFetching: false,
 	  phones: [],
-	  selectedPhoneIdExternal: false,
+	  selectedPhoneIdExternal: '',
 	  selectedPhone: {}
 	};
 
@@ -32181,6 +32181,8 @@ var bundle =
 	  switch (action.type) {
 	    case _actions.SELECT_PHONE:
 	      return action.idExternal;
+	    case _actions.CLICK_BACK:
+	      return '';
 	    default:
 	      return state;
 	  }
@@ -32221,6 +32223,7 @@ var bundle =
 	  switch (action.type) {
 	    case _actions.RECEIVE_PHONE:
 	      return action.phone;
+	    case _actions.CLICK_BACK:
 	    default:
 	      return state;
 	  }
@@ -32245,9 +32248,10 @@ var bundle =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
+	exports.CLICK_BACK = exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
 	exports.selectPhone = selectPhone;
 	exports.selectQuery = selectQuery;
+	exports.clickBack = clickBack;
 	exports.fetchPhones = fetchPhones;
 	exports.fetchPhone = fetchPhone;
 	exports.fetchPhonesIfNeeded = fetchPhonesIfNeeded;
@@ -32310,6 +32314,13 @@ var bundle =
 	  };
 	}
 
+	var CLICK_BACK = exports.CLICK_BACK = 'CLICK_BACK';
+	function clickBack() {
+	  return {
+	    type: CLICK_BACK
+	  };
+	}
+
 	function fetchPhones(query) {
 	  return function (dispatch) {
 	    dispatch(requestPhones(query));
@@ -32324,7 +32335,7 @@ var bundle =
 	function fetchPhone(idExternal) {
 	  return function (dispatch) {
 	    dispatch(requestPhone(idExternal));
-	    return (0, _isomorphicFetch2.default)(_settings.HOST + ('/phone?id_external=' + idExternal)).then(function (response) {
+	    return (0, _isomorphicFetch2.default)(_settings.HOST + ('/phones/' + idExternal)).then(function (response) {
 	      return response.json();
 	    }).then(function (json) {
 	      return dispatch(receivePhone(idExternal, json));
@@ -32865,6 +32876,10 @@ var bundle =
 
 	var _PhonesList2 = _interopRequireDefault(_PhonesList);
 
+	var _PhoneInfo = __webpack_require__(522);
+
+	var _PhoneInfo2 = _interopRequireDefault(_PhoneInfo);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -32883,6 +32898,7 @@ var bundle =
 
 	    _this.handleChange = _this.handleChange.bind(_this);
 	    _this.handleSelectPhone = _this.handleSelectPhone.bind(_this);
+	    _this.handleClickBack = _this.handleClickBack.bind(_this);
 	    return _this;
 	  }
 
@@ -32900,6 +32916,12 @@ var bundle =
 
 	        dispatch((0, _actions.fetchPhonesIfNeeded)(selectedQuery));
 	      }
+	      if (nextProps.selectedPhoneIdExternal && nextProps.selectedPhoneIdExternal !== this.props.selectedPhoneIdExternal) {
+	        var _dispatch = nextProps.dispatch,
+	            selectedPhoneIdExternal = nextProps.selectedPhoneIdExternal;
+
+	        _dispatch((0, _actions.fetchPhone)(selectedPhoneIdExternal));
+	      }
 	    }
 	  }, {
 	    key: 'handleChange',
@@ -32914,17 +32936,30 @@ var bundle =
 	      this.props.dispatch((0, _actions.selectPhone)(idExternal));
 	    }
 	  }, {
+	    key: 'handleClickBack',
+	    value: function handleClickBack() {
+	      this.props.dispatch((0, _actions.clickBack)());
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props,
 	          selectedQuery = _props.selectedQuery,
 	          phones = _props.phones,
-	          isFetching = _props.isFetching;
+	          isFetching = _props.isFetching,
+	          selectedPhoneIdExternal = _props.selectedPhoneIdExternal,
+	          selectedPhone = _props.selectedPhone;
+
 
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_TopPanel2.default, { onChange: this.handleChange, selectedQuery: selectedQuery }),
+	        _react2.default.createElement(_TopPanel2.default, {
+	          selectedPhoneIdExternal: selectedPhoneIdExternal,
+	          onChange: this.handleChange,
+	          onClickBack: this.handleClickBack,
+	          selectedQuery: selectedQuery
+	        }),
 	        isFetching && _react2.default.createElement(
 	          'h2',
 	          null,
@@ -32935,7 +32970,8 @@ var bundle =
 	          null,
 	          '\u041F\u0443\u0441\u0442\u043E'
 	        ),
-	        phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { onClick: this.handleSelectPhone, phones: phones, isFetching: isFetching })
+	        !selectedPhoneIdExternal && phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { onClick: this.handleSelectPhone, phones: phones, isFetching: isFetching }),
+	        selectedPhoneIdExternal && !isFetching && _react2.default.createElement(_PhoneInfo2.default, { phone: selectedPhone })
 	      );
 	    }
 	  }]);
@@ -32947,6 +32983,8 @@ var bundle =
 	  selectedQuery: _react.PropTypes.string.isRequired,
 	  phones: _react.PropTypes.array.isRequired,
 	  isFetching: _react.PropTypes.bool.isRequired,
+	  selectedPhoneIdExternal: _react.PropTypes.string.isRequired,
+	  selectedPhone: _react.PropTypes.object.isRequired,
 	  dispatch: _react.PropTypes.func.isRequired
 	};
 
@@ -32993,19 +33031,29 @@ var bundle =
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props,
+	          selectedPhoneIdExternal = _props.selectedPhoneIdExternal,
 	          selectedQuery = _props.selectedQuery,
-	          onChange = _props.onChange;
+	          onChange = _props.onChange,
+	          onClickBack = _props.onClickBack;
 
 
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'top-panel' },
-	        _react2.default.createElement('input', {
+	        !selectedPhoneIdExternal && _react2.default.createElement('input', {
 	          type: 'text', placeholder: 'request',
 	          onKeyPress: function onKeyPress(e) {
 	            return onChange(e.target.value, e.key);
 	          }
-	        })
+	        }),
+	        selectedPhoneIdExternal && _react2.default.createElement(
+	          'div',
+	          { className: 'back-btn', onClick: function onClick(e) {
+	              return onClickBack();
+	            } },
+	          _react2.default.createElement('i', { className: 'fa fa-arrow-left', 'aria-hidden': 'true' }),
+	          ' \u041D\u0430\u0437\u0430\u0434'
+	        )
 	      );
 	    }
 	  }]);
@@ -33017,8 +33065,10 @@ var bundle =
 
 
 	TopPanel.propTypes = {
+	  selectedPhoneIdExternal: _react.PropTypes.string.isRequired,
 	  selectedQuery: _react.PropTypes.string.isRequired,
-	  onChange: _react.PropTypes.func.isRequired
+	  onChange: _react.PropTypes.func.isRequired,
+	  onClickBack: _react.PropTypes.func.isRequired
 		};
 
 /***/ },
@@ -33167,6 +33217,132 @@ var bundle =
 	  title: _react.PropTypes.string.isRequired,
 	  img_url: _react.PropTypes.string.isRequired,
 	  onClick: _react.PropTypes.func.isRequired
+		};
+
+/***/ },
+/* 522 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(298);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PhoneInfo = function (_Component) {
+	  _inherits(PhoneInfo, _Component);
+
+	  function PhoneInfo() {
+	    _classCallCheck(this, PhoneInfo);
+
+	    return _possibleConstructorReturn(this, (PhoneInfo.__proto__ || Object.getPrototypeOf(PhoneInfo)).apply(this, arguments));
+	  }
+
+	  _createClass(PhoneInfo, [{
+	    key: 'render',
+	    value: function render() {
+	      var phone = this.props.phone;
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'phone-info' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'img' },
+	          _react2.default.createElement('img', { src: phone.image_url })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'content' },
+	          _react2.default.createElement(
+	            'h1',
+	            null,
+	            phone.title
+	          ),
+	          _react2.default.createElement(
+	            'p',
+	            null,
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              '\u042D\u043A\u0440\u0430\u043D: '
+	            ),
+	            phone.display_size,
+	            '" ',
+	            phone.display_resolution
+	          ),
+	          _react2.default.createElement(
+	            'p',
+	            null,
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              '\u041A\u0430\u043C\u0435\u0440\u0430: '
+	            ),
+	            phone.camera_photo,
+	            ', \u0432\u0438\u0434\u0435\u043E - ',
+	            phone.camera_video
+	          ),
+	          phone.ram && _react2.default.createElement(
+	            'p',
+	            null,
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              '\u041E\u0417\u0423: '
+	            ),
+	            phone.ram
+	          ),
+	          phone.cpu && _react2.default.createElement(
+	            'p',
+	            null,
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              '\u041F\u0440\u043E\u0446\u0435\u0441\u0441\u043E\u0440: '
+	            ),
+	            phone.cpu
+	          ),
+	          phone.battery_bulk && _react2.default.createElement(
+	            'p',
+	            null,
+	            _react2.default.createElement(
+	              'strong',
+	              null,
+	              '\u0411\u0430\u0442\u0430\u0440\u0435\u044F: '
+	            ),
+	            phone.battery_bulk,
+	            ', \u0442\u0438\u043F - ',
+	            phone.battery_type
+	          )
+	        ),
+	        _react2.default.createElement('div', { className: 'separ' })
+	      );
+	    }
+	  }]);
+
+	  return PhoneInfo;
+	}(_react.Component);
+
+	exports.default = PhoneInfo;
+
+
+	PhoneInfo.propTypes = {
+	  phone: _react.PropTypes.object.isRequired
 		};
 
 /***/ }

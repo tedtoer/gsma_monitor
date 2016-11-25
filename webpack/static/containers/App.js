@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectQuery, fetchPhonesIfNeeded, selectPhone } from '../actions'
+import { selectQuery, fetchPhonesIfNeeded, fetchPhone, selectPhone, clickBack } from '../actions'
 import TopPanel from '../components/TopPanel'
 import PhonesList from '../components/PhonesList'
+import PhoneInfo from '../components/PhoneInfo'
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
     this.handleSelectPhone = this.handleSelectPhone.bind(this)
+    this.handleClickBack = this.handleClickBack.bind(this)
   }
 
   // componentDidMount() {
@@ -20,6 +22,10 @@ class App extends Component {
     if (nextProps.selectedQuery !== this.props.selectedQuery) {
       const { dispatch, selectedQuery } = nextProps
       dispatch(fetchPhonesIfNeeded(selectedQuery))
+    }
+    if (nextProps.selectedPhoneIdExternal && nextProps.selectedPhoneIdExternal !== this.props.selectedPhoneIdExternal) {
+      const { dispatch, selectedPhoneIdExternal } = nextProps
+      dispatch(fetchPhone(selectedPhoneIdExternal))
     }
   }
 
@@ -33,19 +39,35 @@ class App extends Component {
     this.props.dispatch(selectPhone(idExternal))
   }
 
+  handleClickBack() {
+    this.props.dispatch(clickBack())
+  }
+
   render() {
-    const { selectedQuery, phones, isFetching } = this.props
+    const {
+      selectedQuery, phones, isFetching,
+      selectedPhoneIdExternal, selectedPhone
+    } = this.props
+
     return (
       <div>
-        <TopPanel onChange={this.handleChange} selectedQuery={selectedQuery} />
+        <TopPanel
+          selectedPhoneIdExternal={selectedPhoneIdExternal}
+          onChange={this.handleChange}
+          onClickBack={this.handleClickBack}
+          selectedQuery={selectedQuery}
+        />
         {isFetching &&
           <h2>Загрузка...</h2>
         }
         {!isFetching && phones.length === 0 &&
           <h2>Пусто</h2>
         }
-        {phones.length > 0 && !isFetching &&
+        {!selectedPhoneIdExternal && phones.length > 0 && !isFetching &&
           <PhonesList onClick={this.handleSelectPhone} phones={phones} isFetching={isFetching} />
+        }
+        {selectedPhoneIdExternal && !isFetching &&
+          <PhoneInfo phone={selectedPhone} />
         }
       </div>
     )
@@ -56,6 +78,8 @@ App.propTypes = {
   selectedQuery: PropTypes.string.isRequired,
   phones: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  selectedPhoneIdExternal: PropTypes.string.isRequired,
+  selectedPhone: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 }
 
