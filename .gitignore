@@ -23,3 +23,5 @@
 /app/assets/javascripts/bundle.js.map
 /webpack/node_modules
 /node_modules
+
+.rspec
