@@ -20,7 +20,6 @@
 .ruby-gemset
 .ruby-version
 
-/app/assets/javascripts/bundle.js
 /app/assets/javascripts/bundle.js.map
 /webpack/node_modules
 /node_modules
