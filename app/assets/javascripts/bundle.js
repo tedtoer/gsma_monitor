@@ -32754,12 +32754,12 @@ var bundle =
 /* 517 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-		var HOST = exports.HOST = 'http://localhost:3000';
+		var HOST = exports.HOST = window.location.origin;
 
 /***/ },
 /* 518 */
@@ -33006,7 +33006,8 @@ var bundle =
 	          return _react2.default.createElement(_PhoneItem2.default, _extends({
 	            key: phone.id
 	          }, phone));
-	        })
+	        }),
+	        _react2.default.createElement('div', { className: 'separ' })
 	      );
 	    }
 	  }]);
