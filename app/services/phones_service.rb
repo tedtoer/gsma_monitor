@@ -14,6 +14,9 @@ class PhonesService
   private
 
   def provider_service
+    raise NoProviderError if provider.blank?
     @provider_service ||= Object.const_get("Providers::#{provider}").new
   end
+
+  class NoProviderError < StandardError; end
 end

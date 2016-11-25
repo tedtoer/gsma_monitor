@@ -15,6 +15,9 @@ gem 'responders'
 group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'webmock'
+  gem 'rspec-json_expectations'
 end
 
 group :development do
