@@ -16,5 +16,11 @@
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/tedtoer/gsma_monitor#readme"
+  "homepage": "https://bitbucket.org/tedtoer/gsma_monitor#readme",
+  "devDependencies": {
+    "webpack": "^1.13.3"
+  },
+  "dependencies": {
+    "webpack": "^1.13.3"
+  }
 }
