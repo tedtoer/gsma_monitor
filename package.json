@@ -21,6 +21,7 @@
     "webpack": "^1.13.3"
   },
   "dependencies": {
+    "extract-text-webpack-plugin": "^1.0.1",
     "webpack": "^1.13.3"
   }
 }
