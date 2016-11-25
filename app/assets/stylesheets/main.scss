@@ -4,14 +4,14 @@
 
 body {
   font: 400 16px/22px 'Roboto', sans-serif;
-  color: #333;
+  color: #222;
   background: #fff;
 }
 
 input, textarea {
   padding: 12px 20px;
   font: 400 16px/22px 'Roboto', sans-serif;
-  color: #808080;
+  color: #222;
   background: #fff;
   border: none;
   outline: none;
@@ -28,28 +28,53 @@ input {
 }
 
 #root {
-  width: 320px;
+  width: 960px;
   margin: 0 auto;
   font-size: 16px;
 }
 
 .top-panel {
   height: 64px;
-  width: 320px;
-  background: #EEE;
+  width: 960px;
+  background: #DDD;
   position: fixed;
 }
 
-.phones-list, h2 {
-  padding-top: 64px;
+.phones-list {
+  padding-top: 84px;
+}
+
+h2 {
+  padding: 74px 0 0 10px;
 }
 
 .phone-item {
-  height: 20px;
-  padding: 12px 20px;
+  height: 220px;
+  width: 150px;
+  float: left;
+  margin: 0 10px 40px 0;
+  text-align: center;
 
   &:hover {
-    background: #c4daff;
+    color: #1674f0;
     cursor: pointer;
   }
+
+  .phone-img img {
+    height: 150px;
+  }
+
+  .phone-title {
+    margin-top: 10px;
+    vertical-align: middle;
+    -webkit-transition: all 0.3s;
+       -moz-transition: all 0.3s;
+         -o-transition: all 0.3s;
+            transition: all 0.3s;
+  }
+}
+
+.separ {
+  clear: both;
+  width: 100%;
 }

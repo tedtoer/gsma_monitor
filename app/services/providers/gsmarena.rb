@@ -6,7 +6,9 @@ class Providers::Gsmarena < Providers::Base
     phones.map do |phone|
       title_node = phone.css('strong span').first
       title = [title_node.children[0], title_node.children[2]].join(' ')
+      img_url = phone.css('img').first.attribute('src').value
       {
+        img_url: img_url,
         title: title,
         id: phone.css('a').first.attribute('href').value[0..-5]
       }

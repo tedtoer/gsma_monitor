@@ -11,6 +11,7 @@ export default class PhonesList extends Component {
             {...phone}
             //onClick={() => onPhoneClick(phone.id)}
           />
+          <div className='separ'></div>
         )}
       </div>
     )
