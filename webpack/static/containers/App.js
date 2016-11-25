@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectQuery, fetchPhonesIfNeeded } from '../actions'
+import { selectQuery, fetchPhonesIfNeeded, selectPhone } from '../actions'
 import TopPanel from '../components/TopPanel'
 import PhonesList from '../components/PhonesList'
 
@@ -8,6 +8,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
+    this.handleSelectPhone = this.handleSelectPhone.bind(this)
   }
 
   // componentDidMount() {
@@ -28,8 +29,12 @@ class App extends Component {
     }
   }
 
+  handleSelectPhone(idExternal) {
+    this.props.dispatch(selectPhone(idExternal))
+  }
+
   render() {
-    const { selectedQuery, phones, isFetching, lastUpdated } = this.props
+    const { selectedQuery, phones, isFetching } = this.props
     return (
       <div>
         <TopPanel onChange={this.handleChange} selectedQuery={selectedQuery} />
@@ -40,7 +45,7 @@ class App extends Component {
           <h2>Пусто</h2>
         }
         {phones.length > 0 && !isFetching &&
-          <PhonesList phones={phones} isFetching={isFetching} />
+          <PhonesList onClick={this.handleSelectPhone} phones={phones} isFetching={isFetching} />
         }
       </div>
     )
@@ -51,27 +56,11 @@ App.propTypes = {
   selectedQuery: PropTypes.string.isRequired,
   phones: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  lastUpdated: PropTypes.number,
   dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps(state) {
-  const { selectedQuery, phonesByQuery } = state
-  const {
-    isFetching,
-    lastUpdated,
-    items: phones
-  } = phonesByQuery || {
-    isFetching: false,
-    items: []
-  }
-
-  return {
-    selectedQuery,
-    phones,
-    isFetching,
-    lastUpdated
-  }
+  return state
 }
 
 export default connect(mapStateToProps)(App)

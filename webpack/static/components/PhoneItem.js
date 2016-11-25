@@ -1,20 +1,24 @@
-import React, { PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 
-const PhoneItem = ({ id, title, img_url }) => (
-  <div
-    className='phone-item'
-    //onClick={onClick}
-  >
-    <div className='phone-img'><img src={img_url} /></div>
-    <div className='phone-title'>{title}</div>
-  </div>
-)
+export default class PhoneItem extends Component {
+  render() {
+    const { id, title, img_url, onClick } = this.props
 
-PhoneItem.propTypes = {
-  //onClick: PropTypes.func.isRequired,
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  img_url: PropTypes.string.isRequired
+    return (
+      <div
+        className='phone-item'
+        onClick={e => onClick(id)}
+      >
+        <div className='phone-img'><img src={img_url} /></div>
+        <div className='phone-title'>{title}</div>
+      </div>
+    )
+  }
 }
 
-export default PhoneItem
+PhoneItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  img_url: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+}

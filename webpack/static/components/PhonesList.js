@@ -9,7 +9,7 @@ export default class PhonesList extends Component {
           <PhoneItem
             key={phone.id}
             {...phone}
-            //onClick={() => onPhoneClick(phone.id)}
+            onClick={this.props.onClick}
           />
         )}
         <div className='separ'></div>
@@ -19,5 +19,6 @@ export default class PhonesList extends Component {
 }
 
 PhonesList.propTypes = {
-  phones: PropTypes.array.isRequired
+  phones: PropTypes.array.isRequired,
+  onClick: PropTypes.func.isRequired
 }

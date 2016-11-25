@@ -1,6 +1,31 @@
 import fetch from 'isomorphic-fetch'
 import { HOST } from './settings'
 
+export const SELECT_PHONE = 'SELECT_PHONE'
+export function selectPhone(idExternal) {
+  return {
+    type: SELECT_PHONE,
+    idExternal
+  }
+}
+
+export const REQUEST_PHONE = 'REQUEST_PHONE'
+function requestPhone(idExternal) {
+  return {
+    type: REQUEST_PHONE,
+    idExternal
+  }
+}
+
+export const RECEIVE_PHONE = 'RECEIVE_PHONE'
+function receivePhone(idExternal, json) {
+  return {
+    type: RECEIVE_PHONE,
+    idExternal,
+    phone: json.data
+  }
+}
+
 export const SELECT_QUERY = 'SELECT_QUERY'
 export function selectQuery(query) {
   return {
@@ -22,8 +47,7 @@ function receivePhones(query, json) {
   return {
     type: RECEIVE_PHONES,
     query,
-    phones: json.data,
-    receivedAt: Date.now()
+    phones: json.data
   }
 }
 
@@ -36,9 +60,17 @@ export function fetchPhones(query) {
   }
 }
 
-function shouldFetchPhones(state, query) {
-  const phones = state.phonesByQuery
-  if (phones.isFetching) {
+export function fetchPhone(idExternal) {
+  return dispatch => {
+    dispatch(requestPhone(idExternal))
+    return fetch(HOST + `/phone?id_external=${idExternal}`)
+      .then(response => response.json())
+      .then(json => dispatch(receivePhone(idExternal, json)))
+  }
+}
+
+function shouldFetchPhones(state) {
+  if (state.isFetching) {
     return false
   } else {
     return true
@@ -47,7 +79,7 @@ function shouldFetchPhones(state, query) {
 
 export function fetchPhonesIfNeeded(query) {
   return (dispatch, getState) => {
-    if (shouldFetchPhones(getState(), query)) {
+    if (shouldFetchPhones(getState())) {
       return dispatch(fetchPhones(query))
     } else {
       return Promise.resolve()

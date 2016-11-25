@@ -32153,9 +32153,13 @@ var bundle =
 
 	var _actions = __webpack_require__(514);
 
-	var phonesInitialState = {
+	// not uses, just for clarity
+	var initialState = {
+	  selectedQuery: '',
 	  isFetching: false,
-	  items: []
+	  phones: [],
+	  selectedPhoneIdExternal: false,
+	  selectedPhone: {}
 	};
 
 	function selectedQuery() {
@@ -32170,28 +32174,64 @@ var bundle =
 	  }
 	}
 
-	function phonesByQuery() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : phonesInitialState;
+	function selectedPhoneIdExternal() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case _actions.SELECT_PHONE:
+	      return action.idExternal;
+	    default:
+	      return state;
+	  }
+	}
+
+	function isFetching() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 	  var action = arguments[1];
 
 	  switch (action.type) {
 	    case _actions.REQUEST_PHONES:
-	      return Object.assign({}, state, {
-	        isFetching: true
-	      });
+	    case _actions.REQUEST_PHONE:
+	      return true;
 	    case _actions.RECEIVE_PHONES:
-	      return Object.assign({}, state, {
-	        isFetching: false,
-	        items: action.phones,
-	        lastUpdated: action.receivedAt
-	      });
+	    case _actions.RECEIVE_PHONE:
+	      return false;
+	    default:
+	      return state;
+	  }
+	}
+
+	function phones() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case _actions.RECEIVE_PHONES:
+	      return action.phones;
+	    default:
+	      return state;
+	  }
+	}
+
+	function selectedPhone() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case _actions.RECEIVE_PHONE:
+	      return action.phone;
 	    default:
 	      return state;
 	  }
 	}
 
 	var rootReducer = (0, _redux.combineReducers)({
-	  phonesByQuery: phonesByQuery, selectedQuery: selectedQuery
+	  selectedQuery: selectedQuery,
+	  isFetching: isFetching,
+	  phones: phones,
+	  selectedPhoneIdExternal: selectedPhoneIdExternal,
+	  selectedPhone: selectedPhone
 	});
 
 		exports.default = rootReducer;
@@ -32205,9 +32245,11 @@ var bundle =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = undefined;
+	exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
+	exports.selectPhone = selectPhone;
 	exports.selectQuery = selectQuery;
 	exports.fetchPhones = fetchPhones;
+	exports.fetchPhone = fetchPhone;
 	exports.fetchPhonesIfNeeded = fetchPhonesIfNeeded;
 
 	var _isomorphicFetch = __webpack_require__(515);
@@ -32217,6 +32259,31 @@ var bundle =
 	var _settings = __webpack_require__(517);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var SELECT_PHONE = exports.SELECT_PHONE = 'SELECT_PHONE';
+	function selectPhone(idExternal) {
+	  return {
+	    type: SELECT_PHONE,
+	    idExternal: idExternal
+	  };
+	}
+
+	var REQUEST_PHONE = exports.REQUEST_PHONE = 'REQUEST_PHONE';
+	function requestPhone(idExternal) {
+	  return {
+	    type: REQUEST_PHONE,
+	    idExternal: idExternal
+	  };
+	}
+
+	var RECEIVE_PHONE = exports.RECEIVE_PHONE = 'RECEIVE_PHONE';
+	function receivePhone(idExternal, json) {
+	  return {
+	    type: RECEIVE_PHONE,
+	    idExternal: idExternal,
+	    phone: json.data
+	  };
+	}
 
 	var SELECT_QUERY = exports.SELECT_QUERY = 'SELECT_QUERY';
 	function selectQuery(query) {
@@ -32239,8 +32306,7 @@ var bundle =
 	  return {
 	    type: RECEIVE_PHONES,
 	    query: query,
-	    phones: json.data,
-	    receivedAt: Date.now()
+	    phones: json.data
 	  };
 	}
 
@@ -32255,9 +32321,19 @@ var bundle =
 	  };
 	}
 
-	function shouldFetchPhones(state, query) {
-	  var phones = state.phonesByQuery;
-	  if (phones.isFetching) {
+	function fetchPhone(idExternal) {
+	  return function (dispatch) {
+	    dispatch(requestPhone(idExternal));
+	    return (0, _isomorphicFetch2.default)(_settings.HOST + ('/phone?id_external=' + idExternal)).then(function (response) {
+	      return response.json();
+	    }).then(function (json) {
+	      return dispatch(receivePhone(idExternal, json));
+	    });
+	  };
+	}
+
+	function shouldFetchPhones(state) {
+	  if (state.isFetching) {
 	    return false;
 	  } else {
 	    return true;
@@ -32266,7 +32342,7 @@ var bundle =
 
 	function fetchPhonesIfNeeded(query) {
 	  return function (dispatch, getState) {
-	    if (shouldFetchPhones(getState(), query)) {
+	    if (shouldFetchPhones(getState())) {
 	      return dispatch(fetchPhones(query));
 	    } else {
 	      return Promise.resolve();
@@ -32806,6 +32882,7 @@ var bundle =
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
 	    _this.handleChange = _this.handleChange.bind(_this);
+	    _this.handleSelectPhone = _this.handleSelectPhone.bind(_this);
 	    return _this;
 	  }
 
@@ -32832,13 +32909,17 @@ var bundle =
 	      }
 	    }
 	  }, {
+	    key: 'handleSelectPhone',
+	    value: function handleSelectPhone(idExternal) {
+	      this.props.dispatch((0, _actions.selectPhone)(idExternal));
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props,
 	          selectedQuery = _props.selectedQuery,
 	          phones = _props.phones,
-	          isFetching = _props.isFetching,
-	          lastUpdated = _props.lastUpdated;
+	          isFetching = _props.isFetching;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -32854,7 +32935,7 @@ var bundle =
 	          null,
 	          '\u041F\u0443\u0441\u0442\u043E'
 	        ),
-	        phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { phones: phones, isFetching: isFetching })
+	        phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { onClick: this.handleSelectPhone, phones: phones, isFetching: isFetching })
 	      );
 	    }
 	  }]);
@@ -32866,28 +32947,11 @@ var bundle =
 	  selectedQuery: _react.PropTypes.string.isRequired,
 	  phones: _react.PropTypes.array.isRequired,
 	  isFetching: _react.PropTypes.bool.isRequired,
-	  lastUpdated: _react.PropTypes.number,
 	  dispatch: _react.PropTypes.func.isRequired
 	};
 
 	function mapStateToProps(state) {
-	  var selectedQuery = state.selectedQuery,
-	      phonesByQuery = state.phonesByQuery;
-
-	  var _ref = phonesByQuery || {
-	    isFetching: false,
-	    items: []
-	  },
-	      isFetching = _ref.isFetching,
-	      lastUpdated = _ref.lastUpdated,
-	      phones = _ref.items;
-
-	  return {
-	    selectedQuery: selectedQuery,
-	    phones: phones,
-	    isFetching: isFetching,
-	    lastUpdated: lastUpdated
-	  };
+	  return state;
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
@@ -32999,13 +33063,17 @@ var bundle =
 	  _createClass(PhonesList, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'phones-list' },
 	        this.props.phones.map(function (phone) {
 	          return _react2.default.createElement(_PhoneItem2.default, _extends({
 	            key: phone.id
-	          }, phone));
+	          }, phone, {
+	            onClick: _this2.props.onClick
+	          }));
 	        }),
 	        _react2.default.createElement('div', { className: 'separ' })
 	      );
@@ -33019,7 +33087,8 @@ var bundle =
 
 
 	PhonesList.propTypes = {
-	  phones: _react.PropTypes.array.isRequired
+	  phones: _react.PropTypes.array.isRequired,
+	  onClick: _react.PropTypes.func.isRequired
 		};
 
 /***/ },
@@ -33032,43 +33101,73 @@ var bundle =
 	  value: true
 	});
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	var _react = __webpack_require__(298);
 
 	var _react2 = _interopRequireDefault(_react);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var PhoneItem = function PhoneItem(_ref) {
-	  var id = _ref.id,
-	      title = _ref.title,
-	      img_url = _ref.img_url;
-	  return _react2.default.createElement(
-	    'div',
-	    {
-	      className: 'phone-item'
-	      //onClick={onClick}
-	    },
-	    _react2.default.createElement(
-	      'div',
-	      { className: 'phone-img' },
-	      _react2.default.createElement('img', { src: img_url })
-	    ),
-	    _react2.default.createElement(
-	      'div',
-	      { className: 'phone-title' },
-	      title
-	    )
-	  );
-	};
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var PhoneItem = function (_Component) {
+	  _inherits(PhoneItem, _Component);
+
+	  function PhoneItem() {
+	    _classCallCheck(this, PhoneItem);
+
+	    return _possibleConstructorReturn(this, (PhoneItem.__proto__ || Object.getPrototypeOf(PhoneItem)).apply(this, arguments));
+	  }
+
+	  _createClass(PhoneItem, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props,
+	          id = _props.id,
+	          title = _props.title,
+	          img_url = _props.img_url,
+	          _onClick = _props.onClick;
+
+
+	      return _react2.default.createElement(
+	        'div',
+	        {
+	          className: 'phone-item',
+	          onClick: function onClick(e) {
+	            return _onClick(id);
+	          }
+	        },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'phone-img' },
+	          _react2.default.createElement('img', { src: img_url })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'phone-title' },
+	          title
+	        )
+	      );
+	    }
+	  }]);
+
+	  return PhoneItem;
+	}(_react.Component);
+
+	exports.default = PhoneItem;
+
 
 	PhoneItem.propTypes = {
-	  //onClick: PropTypes.func.isRequired,
 	  id: _react.PropTypes.string.isRequired,
 	  title: _react.PropTypes.string.isRequired,
-	  img_url: _react.PropTypes.string.isRequired
-	};
-
-		exports.default = PhoneItem;
+	  img_url: _react.PropTypes.string.isRequired,
+	  onClick: _react.PropTypes.func.isRequired
+		};
 
 /***/ }
 /******/ ]);

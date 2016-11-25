@@ -1,11 +1,16 @@
 import { combineReducers } from 'redux'
 import {
-  SELECT_QUERY, REQUEST_PHONES, RECEIVE_PHONES
+  SELECT_QUERY, REQUEST_PHONES, RECEIVE_PHONES,
+  SELECT_PHONE, REQUEST_PHONE, RECEIVE_PHONE
 } from './actions'
 
-const phonesInitialState = {
+// not uses, just for clarity
+const initialState = {
+  selectedQuery: '',
   isFetching: false,
-  items: []
+  phones: [],
+  selectedPhoneIdExternal: false,
+  selectedPhone: {}
 }
 
 function selectedQuery(state = '', action) {
@@ -17,25 +22,52 @@ function selectedQuery(state = '', action) {
   }
 }
 
-function phonesByQuery(state = phonesInitialState, action) {
+function selectedPhoneIdExternal(state = '', action) {
+  switch (action.type) {
+  case SELECT_PHONE:
+    return action.idExternal
+  default:
+    return state
+  }
+}
+
+function isFetching(state = false, action) {
   switch (action.type) {
     case REQUEST_PHONES:
-      return Object.assign({}, state, {
-        isFetching: true
-      })
+    case REQUEST_PHONE:
+      return true
     case RECEIVE_PHONES:
-      return Object.assign({}, state, {
-        isFetching: false,
-        items: action.phones,
-        lastUpdated: action.receivedAt
-      })
+    case RECEIVE_PHONE:
+      return false
+    default:
+      return state
+  }
+}
+
+function phones(state = [], action) {
+  switch (action.type) {
+    case RECEIVE_PHONES:
+      return action.phones
+    default:
+      return state
+  }
+}
+
+function selectedPhone(state = {}, action) {
+  switch (action.type) {
+    case RECEIVE_PHONE:
+      return action.phone
     default:
       return state
   }
 }
 
 const rootReducer = combineReducers({
-  phonesByQuery, selectedQuery
+  selectedQuery,
+  isFetching,
+  phones,
+  selectedPhoneIdExternal,
+  selectedPhone
 })
 
 export default rootReducer
