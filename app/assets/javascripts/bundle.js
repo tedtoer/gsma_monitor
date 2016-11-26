@@ -32194,8 +32194,8 @@ var bundle =
 	  var action = arguments[1];
 
 	  switch (action.type) {
-	    case _actions.SAVE_SCROLL_POSITION:
-	      return action.savedScrollPosition;
+	    case _actions.SELECT_PHONE:
+	      return action.scrollPosition;
 	    default:
 	      return state;
 	  }
@@ -32262,11 +32262,10 @@ var bundle =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.SAVE_SCROLL_POSITION = exports.CLICK_BACK = exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
+	exports.CLICK_BACK = exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
 	exports.selectPhone = selectPhone;
 	exports.selectQuery = selectQuery;
 	exports.clickBack = clickBack;
-	exports.saveScrollPosition = saveScrollPosition;
 	exports.fetchPhones = fetchPhones;
 	exports.fetchPhone = fetchPhone;
 	exports.fetchPhonesIfNeeded = fetchPhonesIfNeeded;
@@ -32280,10 +32279,11 @@ var bundle =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var SELECT_PHONE = exports.SELECT_PHONE = 'SELECT_PHONE';
-	function selectPhone(idExternal) {
+	function selectPhone(idExternal, scrollPosition) {
 	  return {
 	    type: SELECT_PHONE,
-	    idExternal: idExternal
+	    idExternal: idExternal,
+	    scrollPosition: scrollPosition
 	  };
 	}
 
@@ -32333,14 +32333,6 @@ var bundle =
 	function clickBack() {
 	  return {
 	    type: CLICK_BACK
-	  };
-	}
-
-	var SAVE_SCROLL_POSITION = exports.SAVE_SCROLL_POSITION = 'SAVE_SCROLL_POSITION';
-	function saveScrollPosition(savedScrollPosition) {
-	  return {
-	    type: SAVE_SCROLL_POSITION,
-	    savedScrollPosition: savedScrollPosition
 	  };
 	}
 
@@ -32925,11 +32917,6 @@ var bundle =
 	    return _this;
 	  }
 
-	  // componentDidMount() {
-	  //   const { dispatch, selectedQuery } = this.props
-	  //   dispatch(fetchPhonesIfNeeded(selectedQuery))
-	  // }
-
 	  _createClass(App, [{
 	    key: 'componentWillReceiveProps',
 	    value: function componentWillReceiveProps(nextProps) {
@@ -32956,8 +32943,7 @@ var bundle =
 	  }, {
 	    key: 'handleSelectPhone',
 	    value: function handleSelectPhone(idExternal) {
-	      this.props.dispatch((0, _actions.saveScrollPosition)(window.pageYOffset));
-	      this.props.dispatch((0, _actions.selectPhone)(idExternal));
+	      this.props.dispatch((0, _actions.selectPhone)(idExternal, window.pageYOffset));
 	    }
 	  }, {
 	    key: 'handleClickBack',

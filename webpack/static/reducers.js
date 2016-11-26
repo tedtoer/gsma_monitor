@@ -36,8 +36,8 @@ function selectedPhoneIdExternal(state = '', action) {
 
 function savedScrollPosition(state = 0, action) {
   switch (action.type) {
-    case SAVE_SCROLL_POSITION:
-      return action.savedScrollPosition
+    case SELECT_PHONE:
+      return action.scrollPosition
     default:
       return state
   }

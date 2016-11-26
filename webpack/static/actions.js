@@ -2,10 +2,11 @@ import fetch from 'isomorphic-fetch'
 import { HOST } from './settings'
 
 export const SELECT_PHONE = 'SELECT_PHONE'
-export function selectPhone(idExternal) {
+export function selectPhone(idExternal, scrollPosition) {
   return {
     type: SELECT_PHONE,
-    idExternal
+    idExternal,
+    scrollPosition
   }
 }
 
@@ -55,14 +56,6 @@ export const CLICK_BACK = 'CLICK_BACK'
 export function clickBack() {
   return {
     type: CLICK_BACK
-  }
-}
-
-export const SAVE_SCROLL_POSITION = 'SAVE_SCROLL_POSITION'
-export function saveScrollPosition(savedScrollPosition) {
-  return {
-    type: SAVE_SCROLL_POSITION,
-    savedScrollPosition
   }
 }
 

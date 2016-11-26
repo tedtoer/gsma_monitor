@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectQuery, fetchPhonesIfNeeded, fetchPhone, selectPhone, clickBack, saveScrollPosition } from '../actions'
+import { selectQuery, fetchPhonesIfNeeded, fetchPhone, selectPhone, clickBack } from '../actions'
 import TopPanel from '../components/TopPanel'
 import PhonesList from '../components/PhonesList'
 import PhoneInfo from '../components/PhoneInfo'
@@ -12,11 +12,6 @@ class App extends Component {
     this.handleSelectPhone = this.handleSelectPhone.bind(this)
     this.handleClickBack = this.handleClickBack.bind(this)
   }
-
-  // componentDidMount() {
-  //   const { dispatch, selectedQuery } = this.props
-  //   dispatch(fetchPhonesIfNeeded(selectedQuery))
-  // }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.selectedQuery !== this.props.selectedQuery) {
@@ -36,8 +31,7 @@ class App extends Component {
   }
 
   handleSelectPhone(idExternal) {
-    this.props.dispatch(saveScrollPosition(window.pageYOffset))
-    this.props.dispatch(selectPhone(idExternal))
+    this.props.dispatch(selectPhone(idExternal, window.pageYOffset))
   }
 
   handleClickBack() {
