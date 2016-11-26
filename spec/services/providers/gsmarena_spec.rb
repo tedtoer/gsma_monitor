@@ -7,9 +7,9 @@ describe Providers::Gsmarena do
     # some phones has this struct of main image:
     # <a href ... ><img ... /></a>
     # but some this:
-    # <img ... /><
+    # <img ... />
     #
-    # for example
+    # for example:
     # phone w/o link on image: http://www.gsmarena.com/xiaomi_mi_mix_nano-8439.php
     # phone w/ link on image: http://www.gsmarena.com/xiaomi_redmi_note_3-7863.php
 
