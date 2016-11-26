@@ -4,6 +4,7 @@
 
 
 Сервис парсинга gsmarena (можно добавить других провайдеров)
+
 Технологии: React, Redux, Rails
 
 [http://gsma-monitor.herokuapp.com/](http://gsma-monitor.herokuapp.com/)
