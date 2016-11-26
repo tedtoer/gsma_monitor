@@ -28,6 +28,10 @@ class Providers::Gsmarena < Providers::Base
       title = doc.css('.specs-phone-name-title').first.text
       phone = doc.css('.center-stage').first
       specs = phone.css('.specs-spotlight-features').first
+
+      image_element = phone.css('.specs-photo-main a img').first ||
+                      phone.css('.specs-photo-main img').first
+
       display_spec = specs.css('li.help.accented.help-display').first
       camera_spec = specs.css('li.help.accented.help-camera').first
       expansion_spec = specs.css('li.help.accented.help-expansion').first
@@ -35,7 +39,7 @@ class Providers::Gsmarena < Providers::Base
 
       {
         title: title,
-        image_url: phone.css('.specs-photo-main a img').first.attribute('src').value,
+        image_url: image_element.attribute('src').value,
         display_size: display_spec.children[3].content[0..-2],
         display_resolution: display_spec.children[4].content.split(' ')[0],
         camera_photo: camera_spec.children[3].content.strip,

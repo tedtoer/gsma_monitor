@@ -31,6 +31,22 @@ module GsmarenaStubs
     )
   end
 
+  def gsmarena_get_not_link_img_stub
+    stub_request(
+      :get, 'http://www.gsmarena.com/xiaomi_mi_mix_nano-8439.php'
+    ).with(
+      headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Ruby'
+      }
+    ).to_return(
+      status: 200,
+      body: file_fixture('gsmarena_get_not_link_img_stub.html'),
+      headers: {}
+    )
+  end
+
   def gsmarena_search_phones
     [
       {
@@ -73,6 +89,21 @@ module GsmarenaStubs
       image_url: 'http://cdn2.gsmarena.com/vv/bigpic/xiaomi-mi-4c.jpg',
       ram: '3GB RAM',
       title: 'Xiaomi Mi 4c'
+    }
+  end
+
+  def gsmarena_get_not_link_img_phone
+    {
+      title: 'Xiaomi Mi Mix Nano',
+      image_url: 'http://cdn2.gsmarena.com/vv/bigpic/xiaomi-mix-.jpg',
+      display_size: '5.5',
+      display_resolution: '1080x2040',
+      camera_photo: '16MP',
+      camera_video: '2160p',
+      ram: '4GB RAM',
+      cpu: 'Snapdragon 821',
+      battery_bulk: ' ',
+      battery_type: 'Li-Ion'
     }
   end
 end
