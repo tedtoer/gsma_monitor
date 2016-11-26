@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import {
-  SELECT_QUERY, REQUEST_PHONES, RECEIVE_PHONES,
+  SELECT_QUERY, REQUEST_PHONES, RECEIVE_PHONES, SAVE_SCROLL_POSITION,
   SELECT_PHONE, REQUEST_PHONE, RECEIVE_PHONE, CLICK_BACK
 } from './actions'
 
@@ -10,7 +10,8 @@ const initialState = {
   isFetching: false,
   phones: [],
   selectedPhoneIdExternal: '',
-  selectedPhone: {}
+  selectedPhone: {},
+  savedScrollPosition: 0
 }
 
 function selectedQuery(state = '', action) {
@@ -28,6 +29,15 @@ function selectedPhoneIdExternal(state = '', action) {
       return action.idExternal
     case CLICK_BACK:
       return ''
+    default:
+      return state
+  }
+}
+
+function savedScrollPosition(state = 0, action) {
+  switch (action.type) {
+    case SAVE_SCROLL_POSITION:
+      return action.savedScrollPosition
     default:
       return state
   }
@@ -70,7 +80,8 @@ const rootReducer = combineReducers({
   isFetching,
   phones,
   selectedPhoneIdExternal,
-  selectedPhone
+  selectedPhone,
+  savedScrollPosition
 })
 
 export default rootReducer

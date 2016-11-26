@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectQuery, fetchPhonesIfNeeded, fetchPhone, selectPhone, clickBack } from '../actions'
+import { selectQuery, fetchPhonesIfNeeded, fetchPhone, selectPhone, clickBack, saveScrollPosition } from '../actions'
 import TopPanel from '../components/TopPanel'
 import PhonesList from '../components/PhonesList'
 import PhoneInfo from '../components/PhoneInfo'
@@ -36,6 +36,7 @@ class App extends Component {
   }
 
   handleSelectPhone(idExternal) {
+    this.props.dispatch(saveScrollPosition(window.pageYOffset))
     this.props.dispatch(selectPhone(idExternal))
   }
 
@@ -45,7 +46,7 @@ class App extends Component {
 
   render() {
     const {
-      selectedQuery, phones, isFetching,
+      selectedQuery, phones, isFetching, savedScrollPosition,
       selectedPhoneIdExternal, selectedPhone
     } = this.props
 
@@ -64,7 +65,7 @@ class App extends Component {
           <h2>Пусто</h2>
         }
         {!selectedPhoneIdExternal && phones.length > 0 && !isFetching &&
-          <PhonesList onClick={this.handleSelectPhone} phones={phones} isFetching={isFetching} />
+          <PhonesList savedScrollPosition={savedScrollPosition} onClick={this.handleSelectPhone} phones={phones} isFetching={isFetching} />
         }
         {selectedPhoneIdExternal && !isFetching &&
           <PhoneInfo phone={selectedPhone} />
@@ -80,6 +81,7 @@ App.propTypes = {
   isFetching: PropTypes.bool.isRequired,
   selectedPhoneIdExternal: PropTypes.string.isRequired,
   selectedPhone: PropTypes.object.isRequired,
+  savedScrollPosition: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired
 }
 

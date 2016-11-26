@@ -58,6 +58,14 @@ export function clickBack() {
   }
 }
 
+export const SAVE_SCROLL_POSITION = 'SAVE_SCROLL_POSITION'
+export function saveScrollPosition(savedScrollPosition) {
+  return {
+    type: SAVE_SCROLL_POSITION,
+    savedScrollPosition
+  }
+}
+
 export function fetchPhones(query) {
   return dispatch => {
     dispatch(requestPhones(query))

@@ -2,6 +2,12 @@ import React, { PropTypes, Component } from 'react'
 import PhoneItem from './PhoneItem'
 
 export default class PhonesList extends Component {
+  componentDidMount() {
+    if (this.props.savedScrollPosition) {
+      window.scrollTo(0, this.props.savedScrollPosition)
+    }
+  }
+
   render() {
     return (
       <div className='phones-list'>
@@ -20,5 +26,6 @@ export default class PhonesList extends Component {
 
 PhonesList.propTypes = {
   phones: PropTypes.array.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  savedScrollPosition: PropTypes.number.isRequired
 }

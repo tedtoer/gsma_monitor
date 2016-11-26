@@ -32159,7 +32159,8 @@ var bundle =
 	  isFetching: false,
 	  phones: [],
 	  selectedPhoneIdExternal: '',
-	  selectedPhone: {}
+	  selectedPhone: {},
+	  savedScrollPosition: 0
 	};
 
 	function selectedQuery() {
@@ -32183,6 +32184,18 @@ var bundle =
 	      return action.idExternal;
 	    case _actions.CLICK_BACK:
 	      return '';
+	    default:
+	      return state;
+	  }
+	}
+
+	function savedScrollPosition() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	  var action = arguments[1];
+
+	  switch (action.type) {
+	    case _actions.SAVE_SCROLL_POSITION:
+	      return action.savedScrollPosition;
 	    default:
 	      return state;
 	  }
@@ -32234,7 +32247,8 @@ var bundle =
 	  isFetching: isFetching,
 	  phones: phones,
 	  selectedPhoneIdExternal: selectedPhoneIdExternal,
-	  selectedPhone: selectedPhone
+	  selectedPhone: selectedPhone,
+	  savedScrollPosition: savedScrollPosition
 	});
 
 		exports.default = rootReducer;
@@ -32248,10 +32262,11 @@ var bundle =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.CLICK_BACK = exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
+	exports.SAVE_SCROLL_POSITION = exports.CLICK_BACK = exports.RECEIVE_PHONES = exports.REQUEST_PHONES = exports.SELECT_QUERY = exports.RECEIVE_PHONE = exports.REQUEST_PHONE = exports.SELECT_PHONE = undefined;
 	exports.selectPhone = selectPhone;
 	exports.selectQuery = selectQuery;
 	exports.clickBack = clickBack;
+	exports.saveScrollPosition = saveScrollPosition;
 	exports.fetchPhones = fetchPhones;
 	exports.fetchPhone = fetchPhone;
 	exports.fetchPhonesIfNeeded = fetchPhonesIfNeeded;
@@ -32318,6 +32333,14 @@ var bundle =
 	function clickBack() {
 	  return {
 	    type: CLICK_BACK
+	  };
+	}
+
+	var SAVE_SCROLL_POSITION = exports.SAVE_SCROLL_POSITION = 'SAVE_SCROLL_POSITION';
+	function saveScrollPosition(savedScrollPosition) {
+	  return {
+	    type: SAVE_SCROLL_POSITION,
+	    savedScrollPosition: savedScrollPosition
 	  };
 	}
 
@@ -32933,6 +32956,7 @@ var bundle =
 	  }, {
 	    key: 'handleSelectPhone',
 	    value: function handleSelectPhone(idExternal) {
+	      this.props.dispatch((0, _actions.saveScrollPosition)(window.pageYOffset));
 	      this.props.dispatch((0, _actions.selectPhone)(idExternal));
 	    }
 	  }, {
@@ -32947,6 +32971,7 @@ var bundle =
 	          selectedQuery = _props.selectedQuery,
 	          phones = _props.phones,
 	          isFetching = _props.isFetching,
+	          savedScrollPosition = _props.savedScrollPosition,
 	          selectedPhoneIdExternal = _props.selectedPhoneIdExternal,
 	          selectedPhone = _props.selectedPhone;
 
@@ -32970,7 +32995,7 @@ var bundle =
 	          null,
 	          '\u041F\u0443\u0441\u0442\u043E'
 	        ),
-	        !selectedPhoneIdExternal && phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { onClick: this.handleSelectPhone, phones: phones, isFetching: isFetching }),
+	        !selectedPhoneIdExternal && phones.length > 0 && !isFetching && _react2.default.createElement(_PhonesList2.default, { savedScrollPosition: savedScrollPosition, onClick: this.handleSelectPhone, phones: phones, isFetching: isFetching }),
 	        selectedPhoneIdExternal && !isFetching && _react2.default.createElement(_PhoneInfo2.default, { phone: selectedPhone })
 	      );
 	    }
@@ -32985,6 +33010,7 @@ var bundle =
 	  isFetching: _react.PropTypes.bool.isRequired,
 	  selectedPhoneIdExternal: _react.PropTypes.string.isRequired,
 	  selectedPhone: _react.PropTypes.object.isRequired,
+	  savedScrollPosition: _react.PropTypes.number.isRequired,
 	  dispatch: _react.PropTypes.func.isRequired
 	};
 
@@ -33111,6 +33137,13 @@ var bundle =
 	  }
 
 	  _createClass(PhonesList, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      if (this.props.savedScrollPosition) {
+	        window.scrollTo(0, this.props.savedScrollPosition);
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -33138,7 +33171,8 @@ var bundle =
 
 	PhonesList.propTypes = {
 	  phones: _react.PropTypes.array.isRequired,
-	  onClick: _react.PropTypes.func.isRequired
+	  onClick: _react.PropTypes.func.isRequired,
+	  savedScrollPosition: _react.PropTypes.number.isRequired
 		};
 
 /***/ },
