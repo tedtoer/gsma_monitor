@@ -11,8 +11,9 @@ export default class TopPanel extends Component {
       <div className='top-panel'>
         {!selectedPhoneIdExternal &&
           <input
-            type='text' placeholder='request'
+            type='text' placeholder='Поиск'
             onKeyPress={e => onChange(e.target.value, e.key)}
+            defaultValue={selectedQuery}
           />
         }
         {selectedPhoneIdExternal &&
